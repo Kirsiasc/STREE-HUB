@@ -5,8 +5,8 @@ local Window = Rayfield:CreateWindow({
    Icon = 101447877507131,
    LoadingTitle = "SCRIPT Loading...",
    LoadingSubtitle = "made by community: STREE HUB",
-   ShowText = "STREE",
-   Theme = "Green",
+   ShowText = "STREE HUB",
+   Theme = "DarkGreen",
 
    DisableRayfieldPrompts = false,
    DisableBuildWarnings = false,
@@ -14,12 +14,12 @@ local Window = Rayfield:CreateWindow({
    ConfigurationSaving = {
       Enabled = true,
       FolderName = "STREE HUB",
-      FileName = "STREE Hub"
+      FileName = "STREE HUB"
    },
 
    Discord = {
       Enabled = true,
-      Invite = "jdmX43t5mY",
+      Invite = "jdmX43t5mY", -- Hanya kode undangan
       RememberJoins = true
    },
 
@@ -27,97 +27,95 @@ local Window = Rayfield:CreateWindow({
    KeySettings = {
       Title = "STREE HUB",
       Subtitle = "STREE HUB Key System",
-      Note = "Join Discord dan WhatsApp untuk dapatkan key",
+      Note = "Kunjungi Discord dan WhatsApp kami untuk mendapatkan key",
       FileName = "Key",
       SaveKey = true,
       GrabKeyFromSite = false,
-      Key = {"Free Key", "Free Login","PPRI TETAP JAYA"}
+      Key = {"Free Key", "Free Login", "PRRI TETAP JAYA"}
    }
 })
 
--- HOME TAB
-local HomeTab = Window:CreateTab("Home", "house")
-local Section1 = HomeTab:CreateSection("Channel")
+-- Home Tab
+local MainTab = Window:CreateTab("Home", "house")
+MainTab:CreateSection("channel")
 
-HomeTab:CreateButton({
+MainTab:CreateButton({
    Name = "Discord",
    Callback = function()
        setclipboard("https://discord.gg/tTqtKwnGZz")
-       Rayfield:Notify({ Title = "Copied", Content = "Discord link copied!", Duration = 2 })
+       Rayfield:Notify({ Title = "Link Disalin", Content = "Link Discord telah disalin ke clipboard.", Duration = 3 })
    end,
 })
 
-HomeTab:CreateButton({
-   Name = "Channel WhatsApp",
+MainTab:CreateButton({
+   Name = "Channel",
    Callback = function()
        setclipboard("https://whatsapp.com/channel/0029VbAwRihKAwEtwyowt62N")
-       Rayfield:Notify({ Title = "Copied", Content = "WhatsApp link copied!", Duration = 2 })
+       Rayfield:Notify({ Title = "Link Disalin", Content = "Link Channel telah disalin ke clipboard.", Duration = 3 })
    end,
 })
 
--- GAME SCRIPT TAB
-local ScriptTab = Window:CreateTab("Game Script", "earth")
-local Section2 = ScriptTab:CreateSection("Cheating")
+-- Universal Script Tab
+local UniversalTab = Window:CreateTab("Game Script", "earth")
+UniversalTab:CreateSection("Cheatting")
 
-ScriptTab:CreateToggle({
+UniversalTab:CreateToggle({
    Name = "Fly",
    CurrentValue = false,
-   Flag = "FlyToggle",
-   Callback = function(Fly)
+   Flag = "ToggleFly",
+   Callback = function(state)
        loadstring(game:HttpGet("https://cdn.wearedevs.net/scripts/Fly.txt"))()
    end,
 })
 
-ScriptTab:CreateSlider({
+UniversalTab:CreateSlider({
    Name = "WalkSpeed",
    Range = {15, 150},
-   Increment = 10,
+   Increment = 5,
    Suffix = "WS",
-   CurrentValue = 10,
+   CurrentValue = 16,
    Flag = "WalkSpeedSlider",
    Callback = function(V)
        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = V
    end,
 })
 
-ScriptTab:CreateSlider({
+UniversalTab:CreateSlider({
    Name = "JumpPower",
    Range = {15, 150},
-   Increment = 10,
+   Increment = 5,
    Suffix = "JP",
-   CurrentValue = 10,
+   CurrentValue = 50,
    Flag = "JumpPowerSlider",
    Callback = function(V)
        game.Players.LocalPlayer.Character.Humanoid.JumpPower = V
    end,
 })
 
--- ESP TAB
+-- ESP Tab
 local ESPTab = Window:CreateTab("ESP", "eye")
 ESPTab:CreateButton({
-   Name = "ESP Script",
+   Name = "ESP",
    Callback = function()
        loadstring(game:HttpGet("https://pastefy.app/AoZzV4ct/raw"))()
    end,
 })
 
--- AIMBOT TAB
-local AimbotTab = Window:CreateTab("AimBot", "crosshair")
-AimbotTab:CreateButton({
-   Name = "AimBot Script",
+-- AimBot Tab
+local AimBotTab = Window:CreateTab("AimBot", "crosshair")
+AimBotTab:CreateButton({
+   Name = "AimBot",
    Callback = function()
        loadstring(game:HttpGet("https://pastefy.app/ZZZPEYZQ/raw"))()
    end,
 })
 
--- NOTIFY
+-- Notify
 Rayfield:Notify({
    Title = "STREE HUB Loaded",
-   Content = "Harap tunggu 3 detik karena sedang Loading...",
+   Content = "Harap tunggu 3 detik karena sedang loading...",
    Duration = 3,
-   Image = "check",
+   Image = 4483362458 -- Contoh image ID (harus berupa Roblox image ID)
 })
 
--- LOAD CONFIG
 Rayfield:LoadConfiguration()
-

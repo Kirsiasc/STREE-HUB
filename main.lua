@@ -2,7 +2,7 @@ Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "STREE HUB | PRRI SCRIPT",
-   Icon = 101447877507131,
+   Icon = 123032091977400,
    LoadingTitle = "SCRIPT Loading...",
    LoadingSubtitle = "made by community: STREE HUB",
    ShowText = "STREE",

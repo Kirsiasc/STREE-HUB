@@ -6,7 +6,7 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "SCRIPT Loading...",
    LoadingSubtitle = "made by community: STREE HUB",
    ShowText = "STREE",
-   Theme = "DarkGreen",
+   Theme = "Dark",
 
    DisableRayfieldPrompts = false,
    DisableBuildWarnings = false,

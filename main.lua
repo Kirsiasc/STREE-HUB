@@ -19,7 +19,7 @@ local Window = Rayfield:CreateWindow({
 
     Discord = {
         Enabled = true,
-        Invite = "tTqtKwnGZz", -- Hanya kode undangan, tanpa "https://discord.gg/"
+        Invite = "tTqtKwnGZz", -- hanya kode, tanpa https://
         RememberJoins = true
     },
 
@@ -38,41 +38,41 @@ local Window = Rayfield:CreateWindow({
 local UniversalTab = Window:CreateTab("Universal Script", "globe-lock", true)
 UniversalTab:CreateSection("Cheating Tools")
 
--- FlyGuiV3 Button
+-- ✅ Tombol: FlyGuiV3
 UniversalTab:CreateButton({
-    Name = "FlyGuiV3",
+    Name = "Fly GUI V3",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
     end,
 })
 
--- Infinite Yield Button
+-- ✅ Tombol: Infinite Yield
 UniversalTab:CreateButton({
-    Name = "Infinite Yield",
+    Name = "Infinite Yield Admin",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
     end,
 })
 
--- GhostHub Button
+-- ✅ Tombol: GhostHub
 UniversalTab:CreateButton({
-    Name = "GhostHub",
+    Name = "GhostHub Universal Script",
     Callback = function()
         loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-GhostHub-16534"))()
     end,
 })
 
--- Super Ring Toggle
+-- ✅ Toggle: Super Ring
 UniversalTab:CreateToggle({
-    Name = "Super Ring",
+    Name = "Toggle Super Ring",
     CurrentValue = false,
     Flag = "SuperRingToggle",
     Callback = function(Value)
         if Value then
-            -- ON: Aktifkan super ring script
+            print("Super Ring Aktif")
             loadstring(game:HttpGet("https://raw.githubusercontent.com/Kirsiasc/STREE-HUB/main/super_ring_toggle.lua"))()
         else
-            -- OFF: Hapus objek SuperRing (jika ada)
+            print("Super Ring Dimatikan")
             local ring = workspace:FindFirstChild("SuperRing")
             if ring then
                 ring:Destroy()
@@ -81,7 +81,7 @@ UniversalTab:CreateToggle({
     end,
 })
 
--- Notifikasi
+-- ✅ Notifikasi
 Rayfield:Notify({
     Title = "Follow Akun TikTok",
     Content = "Jangan lupa follow TikTok @kirsia.sc",
@@ -96,5 +96,5 @@ Rayfield:Notify({
     Image = 4483362458
 })
 
--- Load saved configuration (toggle state, dll.)
+-- ✅ Load config
 Rayfield:LoadConfiguration()

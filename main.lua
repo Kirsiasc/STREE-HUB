@@ -1,10 +1,8 @@
--- Load Rayfield UI Library
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Buat jendela utama
 local Window = Rayfield:CreateWindow({
     Name = "STREE HUB | PRRI SCRIPT",
-    Icon = 123032091977400, -- Roblox image ID
+    Icon = 123032091977400,
     LoadingTitle = "SCRIPT Loading...",
     LoadingSubtitle = "made by community: STREE HUB",
     ShowText = "STREE HUB",
@@ -15,8 +13,8 @@ local Window = Rayfield:CreateWindow({
 
     ConfigurationSaving = {
         Enabled = true,
-        FolderName = "STREE HUB", -- Folder di local file player
-        FileName = "STREE HUB"    -- Nama file config
+        FolderName = "STREE HUB",
+        FileName = "STREE HUB"
     },
 
     Discord = {
@@ -33,19 +31,14 @@ local Window = Rayfield:CreateWindow({
         FileName = "Key",
         SaveKey = true,
         GrabKeyFromSite = false,
-        Key = {
-            "Free Key",
-            "Free Login",
-            "PRRI TETAP JAYA"
-        }
+        Key = {"Free Key", "Free Login", "PRRI TETAP JAYA"}
     }
 })
 
--- Buat tab dan section
-local UniversalTab = Window:CreateTab("Universal script", "globe-lock")
-local Section = UniversalTab:CreateSection("Cheating")
+local UniversalTab = Window:CreateTab("Universal Script", "globe-lock", true)
+UniversalTab:CreateSection("Cheating Tools")
 
--- Tombol FlyGuiV3
+-- FlyGuiV3 Button
 UniversalTab:CreateButton({
     Name = "FlyGuiV3",
     Callback = function()
@@ -53,7 +46,7 @@ UniversalTab:CreateButton({
     end,
 })
 
--- Tombol Infinite Yield
+-- Infinite Yield Button
 UniversalTab:CreateButton({
     Name = "Infinite Yield",
     Callback = function()
@@ -61,21 +54,47 @@ UniversalTab:CreateButton({
     end,
 })
 
--- Notifikasi TikTok
-Rayfield:Notify({
-    Title = "Follow Akun TikTok",
-    Content = "Jangan Lupa Follow Akun TikTok @kirsia.sc",
-    Duration = 3,
-    Image = 0 -- Bisa diganti Roblox image ID
+-- GhostHub Button
+UniversalTab:CreateButton({
+    Name = "GhostHub",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-GhostHub-16534"))()
+    end,
 })
 
--- Notifikasi Load selesai
+-- Super Ring Toggle
+UniversalTab:CreateToggle({
+    Name = "Super Ring",
+    CurrentValue = false,
+    Flag = "SuperRingToggle",
+    Callback = function(Value)
+        if Value then
+            -- ON: Aktifkan super ring script
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Kirsiasc/STREE-HUB/main/super_ring_toggle.lua"))()
+        else
+            -- OFF: Hapus objek SuperRing (jika ada)
+            local ring = workspace:FindFirstChild("SuperRing")
+            if ring then
+                ring:Destroy()
+            end
+        end
+    end,
+})
+
+-- Notifikasi
+Rayfield:Notify({
+    Title = "Follow Akun TikTok",
+    Content = "Jangan lupa follow TikTok @kirsia.sc",
+    Duration = 3,
+    Image = 0
+})
+
 Rayfield:Notify({
     Title = "STREE HUB Loaded",
     Content = "Harap tunggu 3 detik karena sedang loading...",
     Duration = 3,
-    Image = 4483362458 -- Roblox image ID valid
+    Image = 4483362458
 })
 
--- Load config sebelumnya
+-- Load saved configuration (toggle state, dll.)
 Rayfield:LoadConfiguration()

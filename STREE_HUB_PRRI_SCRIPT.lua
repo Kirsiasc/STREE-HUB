@@ -1,1 +1,1 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/kirsiasc/STREE-HUB/main/STREE_HUB_PRRI_SCRIPT.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Kirsiasc/STREE-HUB/main/main.lua"))()

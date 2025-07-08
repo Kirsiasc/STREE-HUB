@@ -1,8 +1,10 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- Load Rayfield UI Library
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
+-- Buat jendela utama
 local Window = Rayfield:CreateWindow({
     Name = "STREE HUB | PRRI SCRIPT",
-    Icon = 123032091977400, -- Ganti dengan ID ikon Roblox jika ingin tampil di UI
+    Icon = 123032091977400, -- Roblox image ID
     LoadingTitle = "SCRIPT Loading...",
     LoadingSubtitle = "made by community: STREE HUB",
     ShowText = "STREE HUB",
@@ -13,13 +15,13 @@ local Window = Rayfield:CreateWindow({
 
     ConfigurationSaving = {
         Enabled = true,
-        FolderName = "STREE HUB",
-        FileName = "STREE HUB"
+        FolderName = "STREE HUB", -- Folder di local file player
+        FileName = "STREE HUB"    -- Nama file config
     },
 
     Discord = {
         Enabled = true,
-        Invite = "jdmX43t5mY", -- Hanya kode, tanpa "discord.gg/"
+        Invite = "tTqtKwnGZz", -- Hanya kode undangan, tanpa "https://discord.gg/"
         RememberJoins = true
     },
 
@@ -31,11 +33,15 @@ local Window = Rayfield:CreateWindow({
         FileName = "Key",
         SaveKey = true,
         GrabKeyFromSite = false,
-        Key = {"Free Key", "Free Login", "PRRI TETAP JAYA"}
+        Key = {
+            "Free Key",
+            "Free Login",
+            "PRRI TETAP JAYA"
+        }
     }
 })
 
--- TAB Universal
+-- Buat tab dan section
 local UniversalTab = Window:CreateTab("Universal script", "globe-lock")
 local Section = UniversalTab:CreateSection("Cheating")
 
@@ -47,21 +53,29 @@ UniversalTab:CreateButton({
     end,
 })
 
+-- Tombol Infinite Yield
+UniversalTab:CreateButton({
+    Name = "Infinite Yield",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    end,
+})
+
 -- Notifikasi TikTok
 Rayfield:Notify({
     Title = "Follow Akun TikTok",
-    Content = "Jangan Lupa Follow Akun TikTok @kirsia.sx",
+    Content = "Jangan Lupa Follow Akun TikTok @kirsia.sc",
     Duration = 3,
-    Image = 0
+    Image = 0 -- Bisa diganti Roblox image ID
 })
 
--- Notifikasi Script Loaded
+-- Notifikasi Load selesai
 Rayfield:Notify({
     Title = "STREE HUB Loaded",
     Content = "Harap tunggu 3 detik karena sedang loading...",
     Duration = 3,
-    Image = 4483362458
+    Image = 4483362458 -- Roblox image ID valid
 })
 
--- Load Konfigurasi
-Rayfield:LoadConfiguration() 
+-- Load config sebelumnya
+Rayfield:LoadConfiguration()

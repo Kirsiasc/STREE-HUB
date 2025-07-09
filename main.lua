@@ -6,7 +6,7 @@ local Window = Rayfield:CreateWindow({
     Icon = 123032091977400,
     LoadingTitle = "Loading STREE HUB...",
     LoadingSubtitle = "Made by Community: STREE HUB",
-    Text = "STREE HUB
+    Text = "STREE HUB"
     Theme = Bloom
 
     ConfigurationSaving = {

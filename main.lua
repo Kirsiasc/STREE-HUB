@@ -34,8 +34,8 @@ local Window = Rayfield:CreateWindow({
 })
 
 -- Universal Scripts Tab
-local UniversalTab = Window:CreateTab("Universal Scripts", 123032091977400)
-local CheatingSection = UniversalTab:CreateSection("Cheating Tools")
+local UniversalTab = Window:CreateTab("Universal Scripts", 11395780614)
+local CheatingSection = UniversalTab:CreateSection("Cheating")
 
 -- Fly GUI V3 Button
 UniversalTab:CreateButton({
@@ -83,7 +83,7 @@ UniversalTab:CreateToggle({
 })
 
 -- Popular Scripts Tab
-local PopularTab = Window:CreateTab("Popular Scripts", 123032091977400)
+local PopularTab = Window:CreateTab("Popular Scripts", 361434514)
 local PopularSection = PopularTab:CreateSection("Famous Scripts")
 
 -- Infinite Yield Button
@@ -111,6 +111,36 @@ PopularTab:CreateButton({
             Image = 4483362458
         })
         loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-GhostHub-16534"))()
+    end,
+})
+
+local SuperRingEnabled = false
+UniversalTab:CreateToggle({
+    Name = "Super Ring",
+    CurrentValue = SuperRingEnabled,
+    Flag = "SuperRingToggle",
+    Callback = function(Value)
+        SuperRingEnabled = Value
+        if Value then
+            Rayfield:Notify({
+                Title = "Super Ring",
+                Content = "Activating Super Ring...",
+                Duration = 3,
+                Image = 4483362458
+            })
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/kirsiasc/STREE-HUB/main/superring.lua"))()
+        else
+            Rayfield:Notify({
+                Title = "Super Ring",
+                Content = "Deactivating Super Ring...",
+                Duration = 3,
+                Image = 4483362458
+            })
+            local ring = workspace:FindFirstChild("SuperRing")
+            if ring then
+                ring:Destroy()
+            end
+        end
     end,
 })
 

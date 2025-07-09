@@ -7,7 +7,7 @@ local Window = Rayfield:CreateWindow({
     LoadingTitle = "Loading STREE HUB...",
     LoadingSubtitle = "Made by Community: STREE HUB",
     ShowText = "STREE HUB",
-    Theme = "Bloom",
+    Theme = "Ocean",
 
     ConfigurationSaving = {
         Enabled = true,

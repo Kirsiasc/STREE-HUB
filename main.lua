@@ -66,7 +66,7 @@ UniversalTab:CreateToggle({
                 Duration = 3,
                 Image = 4483362458
             })
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Kirsiasc/STREE-HUB/main/super_ring_toggle.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/kirsiasc/STREE-HUB/main/superring.lua"))()
         else
             Rayfield:Notify({
                 Title = "Super Ring",

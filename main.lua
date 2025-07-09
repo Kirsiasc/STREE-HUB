@@ -35,7 +35,7 @@ local Window = Rayfield:CreateWindow({
 
 -- Universal Scripts Tab
 local UniversalTab = Window:CreateTab("Universal Scripts", 11395780614)
-local CheatingSection = UniversalTab:CreateSection("Cheating")
+UniversalTab:CreateSection("Cheating")
 
 -- Fly GUI V3 Button
 UniversalTab:CreateButton({
@@ -51,14 +51,14 @@ UniversalTab:CreateButton({
     end,
 })
 
--- Super Ring Toggle
-local SuperRingEnabled = false
+-- Toggle: Super Ring (Tab: Universal)
+local Toggle1 = false
 UniversalTab:CreateToggle({
     Name = "Super Ring",
-    CurrentValue = SuperRingEnabled,
-    Flag = "SuperRingToggle",
+    CurrentValue = Toggle1,
+    Flag = "SuperRingToggle1",
     Callback = function(Value)
-        SuperRingEnabled = Value
+        Toggle1 = Value
         if Value then
             Rayfield:Notify({
                 Title = "Super Ring",
@@ -84,7 +84,7 @@ UniversalTab:CreateToggle({
 
 -- Popular Scripts Tab
 local PopularTab = Window:CreateTab("Popular Scripts", 361434514)
-local PopularSection = PopularTab:CreateSection("Famous Scripts")
+PopularTab:CreateSection("Famous Scripts")
 
 -- Infinite Yield Button
 PopularTab:CreateButton({
@@ -114,25 +114,68 @@ PopularTab:CreateButton({
     end,
 })
 
-local SuperRingEnabled = false
-UniversalTab:CreateToggle({
-    Name = "Super Ring",
-    CurrentValue = SuperRingEnabled,
-    Flag = "SuperRingToggle",
+-- Brookhaven Audio
+PopularTab:CreateButton({
+    Name = "Audio | Brookhaven",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Loading",
+            Content = "Loading Brookhaven Audio...",
+            Duration = 3,
+            Image = 4483362458
+        })
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nmalka01/nmalka01/refs/heads/main/Brookhaven_audio"))()
+    end,
+})
+
+-- SP HUB Brookhaven
+PopularTab:CreateButton({
+    Name = "SP HUB | Brookhaven",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Loading",
+            Content = "Loading SP HUB Brookhaven...",
+            Duration = 3,
+            Image = 4483362458
+        })
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/as6cd0/SP_Hub/refs/heads/main/Brookhaven"))()
+    end,
+})
+
+-- UIDK Audio Panel
+PopularTab:CreateButton({
+    Name = "UIDK Audio Panel",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Loading",
+            Content = "Loading UIDK Panel...",
+            Duration = 3,
+            Image = 4483362458
+        })
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/kigredns/testUIDK/refs/heads/main/panel.lua"))()
+    end,
+})
+
+-- Toggle: Super Ring Parts V6 (Tab: Popular)
+local Toggle2 = false
+PopularTab:CreateToggle({
+    Name = "Super Ring Parts V6 | Universal",
+    CurrentValue = Toggle2,
+    Flag = "SuperRingToggle2",
     Callback = function(Value)
-        SuperRingEnabled = Value
+        Toggle2 = Value
         if Value then
             Rayfield:Notify({
-                Title = "Super Ring",
-                Content = "Activating Super Ring...",
+                Title = "Super Ring Parts V6",
+                Content = "Activating Super Ring V6...",
                 Duration = 3,
                 Image = 4483362458
             })
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/kirsiasc/STREE-HUB/main/superring.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/chesslovers69/Super-ring-parts-v6/refs/heads/main/Bylukaslol"))()
         else
             Rayfield:Notify({
-                Title = "Super Ring",
-                Content = "Deactivating Super Ring...",
+                Title = "Super Ring V6",
+                Content = "Deactivating Super Ring V6...",
                 Duration = 3,
                 Image = 4483362458
             })
@@ -169,5 +212,5 @@ Rayfield:Notify({
     Image = 4483362458
 })
 
--- Load Configuration
+-- Load saved configuration
 Rayfield:LoadConfiguration()

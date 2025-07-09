@@ -54,14 +54,14 @@ UniversalTab:CreateButton({
 -- Toggle: Super Ring (Tab: Universal)
 local Toggle1 = false
 UniversalTab:CreateToggle({
-    Name = "Super Ring",
+    Name = "Super Ring❌",
     CurrentValue = Toggle1,
     Flag = "SuperRingToggle1",
     Callback = function(Value)
         Toggle1 = Value
         if Value then
             Rayfield:Notify({
-                Title = "Super Ring",
+                Title = "Super Ring❌",
                 Content = "Activating Super Ring...",
                 Duration = 3,
                 Image = 4483362458
@@ -69,7 +69,7 @@ UniversalTab:CreateToggle({
             loadstring(game:HttpGet("https://raw.githubusercontent.com/kirsiasc/STREE-HUB/main/superring.lua"))()
         else
             Rayfield:Notify({
-                Title = "Super Ring",
+                Title = "Super Ring❌",
                 Content = "Deactivating Super Ring...",
                 Duration = 3,
                 Image = 4483362458
@@ -159,14 +159,14 @@ PopularTab:CreateButton({
 -- Toggle: Super Ring Parts V6 (Tab: Popular)
 local Toggle2 = false
 PopularTab:CreateToggle({
-    Name = "Super Ring Parts V6 | Universal",
+    Name = "Super Ring Parts V6 | Universal✔️",
     CurrentValue = Toggle2,
     Flag = "SuperRingToggle2",
     Callback = function(Value)
         Toggle2 = Value
         if Value then
             Rayfield:Notify({
-                Title = "Super Ring Parts V6",
+                Title = "Super Ring Parts V6✔️",
                 Content = "Activating Super Ring V6...",
                 Duration = 3,
                 Image = 4483362458
@@ -174,7 +174,7 @@ PopularTab:CreateToggle({
             loadstring(game:HttpGet("https://raw.githubusercontent.com/chesslovers69/Super-ring-parts-v6/refs/heads/main/Bylukaslol"))()
         else
             Rayfield:Notify({
-                Title = "Super Ring V6",
+                Title = "Super Ring V6✔️",
                 Content = "Deactivating Super Ring V6...",
                 Duration = 3,
                 Image = 4483362458

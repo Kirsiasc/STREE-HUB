@@ -6,19 +6,21 @@ local Window = Rayfield:CreateWindow({
     Icon = 123032091977400,
     LoadingTitle = "Loading STREE HUB...",
     LoadingSubtitle = "Made by Community: STREE HUB",
-    ShowText = "STREE HUB"
-    Theme = "Bloom"
+    ShowText = "STREE HUB",
+    Theme = "Bloom",
 
     ConfigurationSaving = {
         Enabled = true,
         FolderName = "STREE HUB",
         FileName = "STREE HUB Config"
     },
+
     Discord = {
         Enabled = true,
         Invite = "tTqtKwnGZz",
         RememberJoins = true
     },
+
     KeySystem = true,
     KeySettings = {
         Title = "STREE HUB",
@@ -32,7 +34,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 -- Universal Scripts Tab
-local UniversalTab = Window:CreateTab("Universal Scripts", 123032091977400) -- Using image ID for icon
+local UniversalTab = Window:CreateTab("Universal Scripts", 123032091977400)
 local CheatingSection = UniversalTab:CreateSection("Cheating Tools")
 
 -- Fly GUI V3 Button
@@ -81,7 +83,7 @@ UniversalTab:CreateToggle({
 })
 
 -- Popular Scripts Tab
-local PopularTab = Window:CreateTab("Popular Scripts", 123032091977400) -- Using same image ID or replace with different one
+local PopularTab = Window:CreateTab("Popular Scripts", 123032091977400)
 local PopularSection = PopularTab:CreateSection("Famous Scripts")
 
 -- Infinite Yield Button

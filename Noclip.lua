@@ -1,52 +1,70 @@
--- STREE HUB | Noclip Bypass v2 for Steal A Brainrot
--- Dibuat oleh kirsiasc | Full Anti-Opera + Anti-Remote + Anti-Lagtrap
+-- STREE HUB | Noclip Bypass v3 - Final Version
+-- Game: Steal A Brainrot | Dibuat oleh kirsiasc
+-- Fitur: Auto Noclip, Anti-Remote, Anti-Opera, Anti-PhysicsScan
 
 if not game:IsLoaded() then game.Loaded:Wait() end
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local UIS = game:GetService("UserInputService")
+local StarterGui = game:GetService("StarterGui")
 local lp = Players.LocalPlayer
 
-local noclip = false
-
--- Tambahan: Proteksi terhadap anti-remote/modul scanning
-local function protect(part)
+local function safeNoclip(part)
 	pcall(function()
 		part.CanCollide = false
-		part.Massless = true
-		part.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0)
+		if not part.Anchored then
+			part.Massless = true
+		end
+		part:SetAttribute("STREE_PROTECTED", true)
 	end)
 end
 
--- Toggle Noclip dengan tombol N
-UIS.InputBegan:Connect(function(input, gpe)
-	if gpe then return end
-	if input.KeyCode == Enum.KeyCode.N then
-		noclip = not noclip
-		warn("[STREE HUB] Noclip: " .. (noclip and "Aktif" or "Nonaktif"))
-	end
-end)
-
--- Noclip Handler Loop
-RunService.Stepped:Connect(function()
-	if noclip and lp.Character then
-		for _, v in ipairs(lp.Character:GetDescendants()) do
-			if v:IsA("BasePart") and v.CanCollide then
-				protect(v)
-			end
+local function handleCharacter(char)
+	for _, part in ipairs(char:GetDescendants()) do
+		if part:IsA("BasePart") then
+			safeNoclip(part)
 		end
 	end
-end)
 
--- Auto load jika karakter mati
+	-- Proteksi ulang tiap 0.2 detik
+	task.spawn(function()
+		while task.wait(0.2) do
+			if not lp.Character or lp.Character ~= char then break end
+			for _, part in ipairs(char:GetDescendants()) do
+				if part:IsA("BasePart") and part:GetAttribute("STREE_PROTECTED") ~= true then
+					safeNoclip(part)
+				end
+			end
+		end
+	end)
+end
+
+-- Apply noclip ke karakter saat ini
+if lp.Character then
+	handleCharacter(lp.Character)
+end
+
+-- Noclip tiap respawn
 lp.CharacterAdded:Connect(function(char)
-	repeat task.wait() until char:FindFirstChild("HumanoidRootPart")
-	if noclip then
-		for _, v in ipairs(char:GetDescendants()) do
-			if v:IsA("BasePart") then
-				protect(v)
+	char:WaitForChild("HumanoidRootPart")
+	handleCharacter(char)
+end)
+
+-- Loop force disable collide (Real-time)
+RunService.Stepped:Connect(function()
+	local char = lp.Character
+	if char then
+		for _, part in ipairs(char:GetDescendants()) do
+			if part:IsA("BasePart") and part.CanCollide and not part.Anchored then
+				part.CanCollide = false
 			end
 		end
 	end
 end)
+
+-- Notifikasi sukses
+StarterGui:SetCore("SendNotification", {
+	Title = "STREE HUB",
+	Text = "Noclip Bypass v3 Aktif ✔️",
+	Duration = 3
+})

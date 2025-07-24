@@ -1,41 +1,60 @@
+-- STREE HUB | ESP NameTag v2 by kirsiasc
+-- Warna Hijau Neon, Ukuran Normal
+
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
--- Buatkan tag di atas kepala
+-- Fungsi buat NameTag
 local function createNameTag(player)
 	if player == LocalPlayer then return end
-	if not player.Character then return end
-	if player.Character:FindFirstChild("NameTag") then return end
 
-	local head = player.Character:FindFirstChild("Head")
-	if not head then return end
+	local function addTag(char)
+		local head = char:FindFirstChild("Head")
+		if not head then return end
 
-	local billboard = Instance.new("BillboardGui")
-	billboard.Name = "NameTag"
-	billboard.Adornee = head
-	billboard.Size = UDim2.new(0, 200, 0, 50)
-	billboard.StudsOffset = Vector3.new(0, 2, 0)
-	billboard.AlwaysOnTop = true
+		-- Hapus tag lama
+		if head:FindFirstChild("STREE_TAG") then
+			head:FindFirstChild("STREE_TAG"):Destroy()
+		end
 
-	local textLabel = Instance.new("TextLabel", billboard)
-	textLabel.Size = UDim2.new(1, 0, 1, 0)
-	textLabel.BackgroundTransparency = 1
-	textLabel.Text = player.DisplayName
-	textLabel.TextColor3 = Color3.new(1, 1, 1)
-	textLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
-	textLabel.TextStrokeTransparency = 0
-	textLabel.TextScaled = true
-	textLabel.Font = Enum.Font.SourceSansBold
+		local tag = Instance.new("BillboardGui")
+		tag.Name = "STREE_TAG"
+		tag.Adornee = head
+		tag.Size = UDim2.new(0, 100, 0, 30)
+		tag.StudsOffset = Vector3.new(0, 2.5, 0)
+		tag.AlwaysOnTop = true
+		tag.Parent = head
 
-	billboard.Parent = head
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.new(1, 0, 1, 0)
+		label.BackgroundTransparency = 1
+		label.Text = player.DisplayName
+		label.TextColor3 = Color3.fromRGB(0, 255, 0) -- Warna Hijau Neon
+		label.TextStrokeTransparency = 0.4
+		label.TextScaled = false
+		label.Font = Enum.Font.SourceSans
+		label.TextSize = 16 -- Ukuran normal
+		label.Parent = tag
+	end
+
+	-- Pasang saat spawn
+	player.CharacterAdded:Connect(function(char)
+		char:WaitForChild("Head", 5)
+		addTag(char)
+	end)
+
+	-- Kalau sudah spawn duluan
+	if player.Character and player.Character:FindFirstChild("Head") then
+		addTag(player.Character)
+	end
 end
 
--- Loop untuk memasang ESP ke semua player
-RunService.RenderStepped:Connect(function()
-	for _, player in pairs(Players:GetPlayers()) do
-		if player ~= LocalPlayer then
-			createNameTag(player)
-		end
-	end
+-- Tambahkan ke semua pemain
+for _, p in ipairs(Players:GetPlayers()) do
+	createNameTag(p)
+end
+
+-- Tambahkan saat player baru masuk
+Players.PlayerAdded:Connect(function(p)
+	createNameTag(p)
 end)

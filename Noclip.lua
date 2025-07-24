@@ -1,24 +1,24 @@
--- STREE HUB | Noclip Bypass v2 for Steal A Brainrot
--- Dibuat oleh kirsiasc | Full Anti-Opera + Anti-Remote + Anti-Lagtrap
+-- STREE HUB | Noclip Bypass v3.1 for Steal A Brainrot (2025)
+-- Dibuat oleh kirsiasc | Full Bypass: Opera + Remote + Tembok Lokal + Anti Deteksi
 
 if not game:IsLoaded() then game.Loaded:Wait() end
 
+-- SERVICES
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
+
+-- PLAYER REF
 local lp = Players.LocalPlayer
+local Character = lp.Character or lp.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid")
 
--- Protection flags
-local noclip = false
+-- VARIABEL
 local TOGGLE_KEY = Enum.KeyCode.X
-local noclipConnection = nil
+local noclip = false
+local loopConn
 
--- Utility: Safe Character
-local function getCharacter()
-	return lp.Character or lp.CharacterAdded:Wait()
-end
-
--- SafeNotify (tidak trigger Opera AntiCoreGui)
+-- NOTIFIKASI AMAN
 local function notify(msg)
 	pcall(function()
 		game.StarterGui:SetCore("SendNotification", {
@@ -29,60 +29,77 @@ local function notify(msg)
 	end)
 end
 
--- Core Noclip Function (stealth)
-local function enableNoclip()
-	if noclipConnection then noclipConnection:Disconnect() end
-	noclipConnection = RunService.Stepped:Connect(function()
-		pcall(function()
-			local char = getCharacter()
-			for _, part in pairs(char:GetDescendants()) do
-				if part:IsA("BasePart") and part.CanCollide == true and part.Name ~= "HumanoidRootPart" then
-					part.CanCollide = false
-					part.Massless = true
-				end
-			end
-		end)
+-- GET KARAKTER YANG VALID
+local function getChar()
+	return lp.Character or lp.CharacterAdded:Wait()
+end
+
+-- BYPASS COLLISION DAN TELEPORT-CHECK (NOCOLLIDE + MASSLESS + POSITION RESET)
+local function doNoclip()
+	local char = getChar()
+	for _, part in pairs(char:GetDescendants()) do
+		if part:IsA("BasePart") and part.CanCollide and part.Name ~= "HumanoidRootPart" then
+			part.CanCollide = false
+			part.Massless = true
+			part.Velocity = Vector3.zero
+		end
+	end
+end
+
+-- AKTIFKAN Noclip
+local function enable()
+	if loopConn then loopConn:Disconnect() end
+	loopConn = RunService.Stepped:Connect(function()
+		pcall(doNoclip)
 	end)
 end
 
-local function disableNoclip()
-	if noclipConnection then
-		noclipConnection:Disconnect()
-		noclipConnection = nil
-	end
+-- NONAKTIFKAN Noclip
+local function disable()
+	if loopConn then loopConn:Disconnect() end
+	loopConn = nil
 end
 
--- Respawn Handler (autobind ulang)
-lp.CharacterAdded:Connect(function()
-	wait(1)
-	if noclip then
-		enableNoclip()
-		notify("Noclip Reapplied setelah Respawn ✅")
-	end
-end)
-
--- Keyboard Input Handler
-UIS.InputBegan:Connect(function(input, gpe)
-	if gpe then return end
+-- TOGGLE INPUT
+UIS.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
 	if input.KeyCode == TOGGLE_KEY then
 		noclip = not noclip
 		if noclip then
-			enableNoclip()
-			notify("Noclip Aktif ✅")
+			enable()
+			notify("✅ Noclip Aktif (STREE HUB)")
 		else
-			disableNoclip()
-			notify("Noclip Dinonaktifkan ❌")
+			disable()
+			notify("❌ Noclip Dinonaktifkan")
 		end
 	end
 end)
 
--- Anti-Anti (Hilangkan State Deteksi atau Remote Kick)
+-- RESPWAN SUPPPORT
+lp.CharacterAdded:Connect(function(char)
+	Character = char
+	Humanoid = char:WaitForChild("Humanoid")
+	wait(1)
+	if noclip then
+		enable()
+		notify("♻️ Noclip Aktif Ulang (Respawn)")
+	end
+end)
+
+-- HUMANOID STATE BYPASS: HINDARI "FallingDown", "Ragdoll", "Dead"
 pcall(function()
-	local oldState = getCharacter():FindFirstChildOfClass("Humanoid"):GetState()
-	getCharacter():FindFirstChildOfClass("Humanoid").StateChanged:Connect(function(_, newState)
-		if noclip and newState == Enum.HumanoidStateType.FallingDown then
-			wait(0.1)
-			getCharacter():FindFirstChildOfClass("Humanoid"):ChangeState(oldState)
+	local last = Humanoid:GetState()
+	Humanoid.StateChanged:Connect(function(_, new)
+		if noclip and (new == Enum.HumanoidStateType.FallingDown or new == Enum.HumanoidStateType.Ragdoll) then
+			wait()
+			Humanoid:ChangeState(last)
 		end
 	end)
 end)
+
+-- BLOCK SUSPICIOUS REMOTES (ANTI SERVER SPY + OPERA BYPASS)
+for _, conn in pairs(getconnections(Humanoid:GetPropertyChangedSignal("WalkSpeed"))) do
+	if typeof(conn.Function) == "function" and islclosure(conn.Function) then
+		conn:Disable()
+	end
+end

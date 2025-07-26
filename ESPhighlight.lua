@@ -1,48 +1,62 @@
--- STREE HUB | ESP HIGHLIGHT v1 by kirsiasc
+-- STREE HUB | ESP HIGHLIGHT by kirsiasc
 -- Warna Fill Putih & Outline Hijau Neon
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
+local ESP_Highlight_Enabled = false
+local highlightTable = {}
 
--- Fungsi untuk menambahkan highlight ke player lain
-local function addESP(player)
-    if player == LocalPlayer then return end
-    player.CharacterAdded:Connect(function(char)
-        local hl = Instance.new("Highlight")
-        hl.Name = "STREE_HIGHLIGHT"
-        hl.FillColor = Color3.new(1, 1, 1) -- Putih
-        hl.OutlineColor = Color3.fromRGB(0, 255, 0) -- Hijau Neon
-        hl.FillTransparency = 0.2
-        hl.OutlineTransparency = 0
-        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-        hl.Adornee = char
-        hl.Parent = char
-    end)
+-- Fungsi aktifkan ESP Highlight
+local function EnableESPHighlight()
+    -- Bersihkan highlight sebelumnya
+    for _, h in pairs(highlightTable) do
+        if h and h.Parent then
+            h:Destroy()
+        end
+    end
+    highlightTable = {}
 
-    -- Jika sudah spawn
-    if player.Character then
-        local char = player.Character
-        if not char:FindFirstChild("STREE_HIGHLIGHT") then
-            local hl = Instance.new("Highlight")
-            hl.Name = "STREE_HIGHLIGHT"
-            hl.FillColor = Color3.new(1, 1, 1)
-            hl.OutlineColor = Color3.fromRGB(0, 255, 0)
-            hl.FillTransparency = 0.2
-            hl.OutlineTransparency = 0
-            hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-            hl.Adornee = char
-            hl.Parent = char
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer and player.Character then
+            local highlight = Instance.new("Highlight")
+            highlight.Name = "STREE_Highlight"
+            highlight.FillColor = Color3.fromRGB(255, 255, 255) -- Putih
+            highlight.OutlineColor = Color3.fromRGB(57, 255, 20) -- Hijau Neon
+            highlight.FillTransparency = 0.3
+            highlight.OutlineTransparency = 0
+            highlight.Adornee = player.Character
+            highlight.Parent = player.Character
+            table.insert(highlightTable, highlight)
         end
     end
 end
 
--- Tambahkan ESP ke semua player yang ada
-for _, plr in pairs(Players:GetPlayers()) do
-    addESP(plr)
+-- Fungsi matikan ESP Highlight
+local function DisableESPHighlight()
+    for _, h in pairs(highlightTable) do
+        if h and h.Parent then
+            h:Destroy()
+        end
+    end
+    highlightTable = {}
 end
 
--- Tambahkan ESP saat player baru masuk
-Players.PlayerAdded:Connect(function(plr)
-    addESP(plr)
+-- Loop pembaruan ESP
+task.spawn(function()
+    while true do
+        if ESP_Highlight_Enabled then
+            EnableESPHighlight()
+        end
+        task.wait(1.5)
+    end
 end)
+
+-- Tambahkan Toggle ke Tab Visual
+VisualTab:AddToggle({
+    Name = "ESP Highlight (Putih & Hijau Neon)",
+    Default = false,
+    Callback = function(state)
+        ESP_Highlight_Enabled = state
+        if not state then
+            DisableESPHighlight()
+        end
+    end
+})

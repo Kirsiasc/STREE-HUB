@@ -7,6 +7,7 @@ local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
 local espBoxes = {}
+local ESPBox_Enabled = false
 
 -- Buat ESP Box baru
 local function createBox(player)
@@ -30,12 +31,18 @@ Players.PlayerRemoving:Connect(function(player)
     end
 end)
 
--- Update ESP tiap frame
+-- Render loop untuk update box
 RunService.RenderStepped:Connect(function()
+    if not ESPBox_Enabled then
+        for _, box in pairs(espBoxes) do
+            box.Visible = false
+        end
+        return
+    end
+
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-            local head = player.Character:FindFirstChild("Head")
+            local hrp = player.Character.HumanoidRootPart
             local rootPos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
 
             if not espBoxes[player] then
@@ -62,3 +69,17 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
+
+-- Tambahkan Toggle ke VisualTab (OrionLib)
+VisualTab:AddToggle({
+    Name = "ESP Kotak (Box)",
+    Default = false,
+    Callback = function(value)
+        ESPBox_Enabled = value
+        if not value then
+            for _, box in pairs(espBoxes) do
+                if box then box.Visible = false end
+            end
+        end
+    end
+})

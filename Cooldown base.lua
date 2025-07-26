@@ -5,20 +5,6 @@
 🔧 Dibuat oleh kirsiasc  
 ]]
 
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
-local Window = OrionLib:MakeWindow({
-    Name = "STREE HUB | Steal A Brainrot",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "STREE HUB"
-})
-
-local VisualTab = Window:MakeTab({
-    Name = "Visual",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 

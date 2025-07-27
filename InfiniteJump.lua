@@ -1,68 +1,49 @@
--- STREE HUB | Infinite Jump Fixed for "Steal A Brainrot"
--- Dibuat oleh kirsiasc - 2025
-
-if not game:IsLoaded() then game.Loaded:Wait() end
-
-local UserInputService = game:GetService("UserInputService")
+-- STREE HUB Infinite Jump Bypass [Steal A Brainrot]
+local UIS = game:GetService("UserInputService")
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local lp = Players.LocalPlayer
-local char = lp.Character or lp.CharacterAdded:Wait()
-local hum = char:WaitForChild("Humanoid")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 
--- Auto update character
-lp.CharacterAdded:Connect(function(c)
-	char = c
-	hum = c:WaitForChild("Humanoid")
-end)
+_G.STREE_INFINITE_JUMP = _G.STREE_INFINITE_JUMP or false
 
--- Status Toggle
-local InfiniteJumpEnabled = false
+-- Anti-cheat bypass function
+local function PatchAntiJump()
+    -- Block any remote related to jump/fly exploit
+    for _, name in ipairs({"JumpDetected", "ViolationReport", "ServerLog", "ReportExploit"}) do
+        local remote = ReplicatedStorage:FindFirstChild(name)
+        if remote and remote:IsA("RemoteEvent") then
+            remote:Destroy()
+        end
+    end
 
--- Infinite Jump Logic
-UserInputService.JumpRequest:Connect(function()
-	if InfiniteJumpEnabled and lp.Character and hum and hum:GetState() ~= Enum.HumanoidStateType.Seated then
-		local root = char:FindFirstChild("HumanoidRootPart")
-		if root then
-			root.Velocity = Vector3.new(0, 50, 0)
-			hum:ChangeState(Enum.HumanoidStateType.Freefall)
-		end
-	end
-end)
+    -- Hook any function with suspicious jump check
+    for _, func in pairs(getgc(true)) do
+        if typeof(func) == "function" and islclosure(func) then
+            local info = debug.getinfo(func)
+            if info and info.name and (info.name:lower():find("jump") or info.name:lower():find("air")) then
+                hookfunction(func, function() return end)
+            end
+        end
+    end
+end
 
--- Pastikan Jumping dan Freefall tidak dinonaktifkan
-RunService.Stepped:Connect(function()
-	if InfiniteJumpEnabled and hum then
-		pcall(function()
-			hum:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
-			hum:SetStateEnabled(Enum.HumanoidStateType.Freefall, true)
-		end)
-	end
-end)
+-- Infinite Jump
+local function EnableInfiniteJump()
+    UIS.JumpRequest:Connect(function()
+        if _G.STREE_INFINITE_JUMP then
+            local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end
+    end)
+end
 
--- Tambahkan Toggle OrionLib
-GameplayTab:AddToggle({
-	Name = "Infinite Jump (Anti SAB)",
-	Default = false,
-	Callback = function(state)
-		InfiniteJumpEnabled = state
-		if state then
-			pcall(function()
-				game.StarterGui:SetCore("SendNotification", {
-					Title = "STREE HUB",
-					Text = "Infinite Jump Aktif",
-					Duration = 4
-				})
-			end)
-		else
-			pcall(function()
-				game.StarterGui:SetCore("SendNotification", {
-					Title = "STREE HUB",
-					Text = "Infinite Jump Nonaktif",
-					Duration = 4
-				})
-			end)
-		end
-	end
-})
+-- Run when toggle is ON
+if _G.STREE_INFINITE_JUMP then
+    PatchAntiJump()
+    EnableInfiniteJump()
+						end

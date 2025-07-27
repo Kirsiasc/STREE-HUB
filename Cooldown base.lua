@@ -1,89 +1,84 @@
---[[  
-📜 STREE HUB - Cooldown Base Viewer (Toggle OrionLib)  
-🧠 Untuk game Steal A Brainrot  
-🎯 Menampilkan waktu cooldown semua base dengan ON/OFF Toggle  
-🔧 Dibuat oleh kirsiasc  
-]]
-
-local RunService = game:GetService("RunService")
+-- STREE HUB | Cooldown Base ESP Putih Neon | Steal A Brainrot Compatible
 local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+local Camera = Workspace.CurrentCamera
 
-local CooldownEnabled = false
-local BillboardList = {}
+_G.STREE_COOLDOWN_BASE = _G.STREE_COOLDOWN_BASE or false
 
--- Fungsi buat Billboard GUI
-local function createBillboard(part, cooldown)
-    local billboard = Instance.new("BillboardGui")
-    billboard.Name = "CooldownDisplay"
-    billboard.Size = UDim2.new(0, 200, 0, 50)
-    billboard.StudsOffset = Vector3.new(0, 4, 0)
-    billboard.Adornee = part
-    billboard.AlwaysOnTop = true
-    billboard.Parent = part
+-- Ganti nama-nama base cooldown di bawah ini sesuai dengan yang dipakai di Steal A Brainrot
+local COOLDOWN_NAMES = { "Base", "Totem", "Cooldown", "Altar", "Operate", "Station" }
 
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.TextColor3 = Color3.fromRGB(0, 255, 0)
-    label.TextStrokeColor3 = Color3.new(0, 0, 0)
-    label.TextStrokeTransparency = 0.5
-    label.TextScaled = true
-    label.Font = Enum.Font.SourceSansBold
-    label.Text = "Cooldown: " .. math.floor(cooldown.Value) .. "s"
-    label.Parent = billboard
+local espTable = {}
 
-    return {
-        Billboard = billboard,
-        Label = label,
-        Cooldown = cooldown
-    }
+-- Cek apakah part cocok dengan nama-nama cooldown
+local function isCooldownBase(part)
+    if not part:IsA("BasePart") then return false end
+    for _, keyword in pairs(COOLDOWN_NAMES) do
+        if string.lower(part.Name):find(string.lower(keyword)) then
+            return true
+        end
+    end
+    return false
 end
 
--- Update label teks tiap frame
-RunService.RenderStepped:Connect(function()
-    if CooldownEnabled then
-        for _, data in ipairs(BillboardList) do
-            if data.Label and data.Cooldown and data.Cooldown.Parent then
-                data.Label.Text = "Cooldown: " .. math.max(0, math.floor(data.Cooldown.Value)) .. "s"
+-- Buat ESP neon putih
+local function createESP(part)
+    if espTable[part] then return end
+
+    local dot = Drawing.new("Circle")
+    dot.Color = Color3.fromRGB(255, 255, 255) -- Putih neon
+    dot.Thickness = 2
+    dot.Radius = 5
+    dot.Filled = true
+    dot.Transparency = 1
+    dot.Visible = false
+
+    espTable[part] = dot
+end
+
+-- Hapus ESP dari part
+local function removeESP(part)
+    if espTable[part] then
+        espTable[part]:Remove()
+        espTable[part] = nil
+    end
+end
+
+-- Scan dan tandai semua base cooldown
+local function scanCooldownParts()
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if isCooldownBase(obj) then
+            createESP(obj)
+        end
+    end
+end
+
+-- Render ESP loop
+local function renderLoop()
+    RunService.RenderStepped:Connect(function()
+        if not _G.STREE_COOLDOWN_BASE then
+            for _, dot in pairs(espTable) do
+                dot.Visible = false
+            end
+            return
+        end
+
+        for part, dot in pairs(espTable) do
+            if part and part.Parent then
+                local pos, onScreen = Camera:WorldToViewportPoint(part.Position + Vector3.new(0, 2, 0))
+                if onScreen then
+                    dot.Position = Vector2.new(pos.X, pos.Y)
+                    dot.Visible = true
+                else
+                    dot.Visible = false
+                end
+            else
+                removeESP(part)
             end
         end
-    end
-end)
-
--- Aktifkan ESP cooldown base
-local function enableCooldownViewer()
-    for _, base in pairs(Workspace:GetDescendants()) do
-        if base:IsA("Model") then
-            local part = base:FindFirstChild("HumanoidRootPart") or base:FindFirstChildWhichIsA("BasePart")
-            local cooldown = base:FindFirstChild("Cooldown") or base:FindFirstChild("CooldownTime") or base:FindFirstChildWhichIsA("NumberValue")
-
-            if part and cooldown and typeof(cooldown.Value) == "number" then
-                table.insert(BillboardList, createBillboard(part, cooldown))
-            end
-        end
-    end
+    end)
 end
 
--- Nonaktifkan (hapus semua Billboard)
-local function disableCooldownViewer()
-    for _, data in ipairs(BillboardList) do
-        if data.Billboard then
-            data.Billboard:Destroy()
-        end
-    end
-    BillboardList = {}
-end
-
--- Toggle OrionLib
-VisualTab:AddToggle({
-    Name = "Base Cooldown Viewer",
-    Default = false,
-    Callback = function(Value)
-        CooldownEnabled = Value
-        if Value then
-            enableCooldownViewer()
-        else
-            disableCooldownViewer()
-        end
-    end
-})
+-- Eksekusi
+scanCooldownParts()
+renderLoop()

@@ -1,85 +1,71 @@
--- STREE HUB | ESP Line Tracer by kirsiasc
--- Garis ke setiap pemain lain
-
+-- STREE HUB ESP Line Tracer Hijau Neon [Toggle Support]
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
-local lines = {}
-local ESPLine_Enabled = false
+_G.STREE_ESP_TRACER = _G.STREE_ESP_TRACER or false
 
--- Fungsi untuk membuat garis baru
-local function createLine(player)
-	if player == LocalPlayer then return end
-	if lines[player] then lines[player]:Remove() end
+local tracers = {}
 
-	local line = Drawing.new("Line")
-	line.Thickness = 1.5
-	line.Color = Color3.fromRGB(0, 255, 0) -- Hijau Neon
-	line.Transparency = 1
-	line.Visible = false
+-- Buat garis untuk player
+local function CreateTracer(player)
+    if tracers[player] then return end
 
-	lines[player] = line
+    local line = Drawing.new("Line")
+    line.Color = Color3.fromRGB(0, 255, 0) -- Hijau neon
+    line.Thickness = 1
+    line.Transparency = 1
+    line.Visible = false
+
+    tracers[player] = line
 end
 
--- Fungsi update garis setiap frame
-RunService.RenderStepped:Connect(function()
-	if not ESPLine_Enabled then
-		for _, line in pairs(lines) do
-			if line then line.Visible = false end
-		end
-		return
-	end
+-- Hapus garis
+local function RemoveTracer(player)
+    if tracers[player] then
+        tracers[player]:Remove()
+        tracers[player] = nil
+    end
+end
 
-	for _, player in pairs(Players:GetPlayers()) do
-		if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-			local hrp = player.Character.HumanoidRootPart
-			local line = lines[player]
+-- Loop utama ESP Tracer
+local function StartTracerESP()
+    RunService.RenderStepped:Connect(function()
+        if not _G.STREE_ESP_TRACER then
+            for _, line in pairs(tracers) do
+                line.Visible = false
+            end
+            return
+        end
 
-			if not line then
-				createLine(player)
-				line = lines[player]
-			end
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                if not tracers[player] then
+                    CreateTracer(player)
+                end
 
-			local success1, screenPos1 = pcall(function()
-				return Camera:WorldToViewportPoint(LocalPlayer.Character.HumanoidRootPart.Position)
-			end)
-			local success2, screenPos2 = pcall(function()
-				return Camera:WorldToViewportPoint(hrp.Position)
-			end)
+                local hrp = player.Character.HumanoidRootPart
+                local tracer = tracers[player]
 
-			if success1 and success2 and screenPos1.Z > 0 and screenPos2.Z > 0 then
-				line.From = Vector2.new(screenPos1.X, screenPos1.Y)
-				line.To = Vector2.new(screenPos2.X, screenPos2.Y)
-				line.Visible = true
-			else
-				line.Visible = false
-			end
-		elseif lines[player] then
-			lines[player].Visible = false
-		end
-	end
-end)
+                local screenPos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
+                if onScreen then
+                    tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y) -- Bawah tengah layar
+                    tracer.To = Vector2.new(screenPos.X, screenPos.Y)
+                    tracer.Visible = true
+                else
+                    tracer.Visible = false
+                end
+            else
+                RemoveTracer(player)
+            end
+        end
+    end)
 
--- Hapus garis jika player keluar
-Players.PlayerRemoving:Connect(function(player)
-	if lines[player] then
-		lines[player]:Remove()
-		lines[player] = nil
-	end
-end)
+    Players.PlayerRemoving:Connect(RemoveTracer)
+end
 
--- Tambahkan toggle ke OrionLib VisualTab
-VisualTab:AddToggle({
-	Name = "ESP Line Tracer",
-	Default = false,
-	Callback = function(state)
-		ESPLine_Enabled = state
-		if not state then
-			for _, line in pairs(lines) do
-				if line then line.Visible = false end
-			end
-		end
-	end
-})
+-- Jalankan jika toggle aktif
+if _G.STREE_ESP_TRACER then
+    StartTracerESP()
+end

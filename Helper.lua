@@ -1,15 +1,17 @@
--- Koordinat keluar map, aman dari NPC dan player
-local SafePos = Vector3.new(-4518, 175, -1021)
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 
--- Fungsi teleport
-local function TeleportToSafeZone()
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
-    local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-    local HRP = Character:WaitForChild("HumanoidRootPart")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HRP = Character:WaitForChild("HumanoidRootPart")
 
-    HRP.CFrame = CFrame.new(SafePos)
-end
+-- Tujuan (safe zone)
+local SafePos = Vector3.new(-4518, 175, -1021) -- Ganti sesuai lokasi aman
 
--- Jalankan
-TeleportToSafeZone()
+-- Tween Info
+local TweenTime = 3 -- Detik waktu perpindahan
+local TweenInfo = TweenInfo.new(TweenTime, Enum.EasingStyle.Linear)
+
+-- Buat Tween
+local Tween = TweenService:Create(HRP, TweenInfo, {CFrame = CFrame.new(SafePos)})
+Tween:Play()

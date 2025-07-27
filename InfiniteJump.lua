@@ -1,40 +1,3 @@
--- InfiniteJump.lua (Stealth Bypass for Steal A Brainrot)
-
-_G.STREE_INFINITE_JUMP = _G.STREE_INFINITE_JUMP or false
-
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local UIS = game:GetService("UserInputService")
-
--- Bypass: gunakan spawn() dan tidak langsung expose koneksi ke _G
-local function EnableInfiniteJump()
-    -- Disconnect koneksi lama
-    if _G._INFINITE_JUMP_CONNECTION then
-        pcall(function() _G._INFINITE_JUMP_CONNECTION:Disconnect() end)
-        _G._INFINITE_JUMP_CONNECTION = nil
-    end
-
-    if _G.STREE_INFINITE_JUMP then
-        _G._INFINITE_JUMP_CONNECTION = UIS.InputBegan:Connect(function(input, processed)
-            if processed then return end
-            if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Space then
-                local char = LocalPlayer.Character
-                if char and char:FindFirstChildOfClass("Humanoid") then
-                    -- Bypass via state cycling (tidak langsung pakai Jumping)
-                    local humanoid = char:FindFirstChildOfClass("Humanoid")
-                    if humanoid:GetState() ~= Enum.HumanoidStateType.Freefall then
-                        humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
-                        task.wait(0.05)
-                        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                    end
-                end
-            end
-        end)
-    end
-end
-
-EnableInfiniteJump()
-
 -- Auto cek toggle tiap detik
 task.spawn(function()
     while true do
@@ -47,3 +10,28 @@ task.spawn(function()
         end
     end
 end)
+
+-- Inisialisasi toggle jika belum ada
+_G.STREE_INFINITE_JUMP = _G.STREE_INFINITE_JUMP or false
+
+-- Cek apakah sudah pernah terkoneksi
+if not _G._InfiniteJumpConnection then
+    local UserInputService = game:GetService("UserInputService")
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+
+    -- Fungsi utama Infinite Jump
+    _G._InfiniteJumpConnection = UserInputService.JumpRequest:Connect(function()
+        if _G.STREE_INFINITE_JUMP then
+            local character = LocalPlayer.Character
+            if character then
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                if humanoid and humanoid:GetState() ~= Enum.HumanoidStateType.Dead then
+                    -- Lewati sistem operasi anti-jump
+                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                    humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+                end
+            end
+        end
+    end)
+end

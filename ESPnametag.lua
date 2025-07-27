@@ -1,83 +1,77 @@
--- STREE HUB | ESP NameTag
--- Ukuran normal, warna hijau neon
-
+-- STREE HUB ESP Name Hijau Neon dengan Toggle
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
-local ESPNameTag_Enabled = false
-local appliedTags = {}
+_G.STREE_ESP_NAME = _G.STREE_ESP_NAME or false
 
--- Fungsi untuk memasang name tag
-local function attachNameTag(player)
-	if player == LocalPlayer then return end
+local nameTags = {}
 
-	local function applyTag(char)
-		local head = char:FindFirstChild("Head")
-		if not head or not ESPNameTag_Enabled then return end
+-- Buat NameTag
+local function CreateNameTag(player)
+    if nameTags[player] then return end
 
-		if head:FindFirstChild("STREE_TAG") then
-			head:FindFirstChild("STREE_TAG"):Destroy()
-		end
+    local tag = Drawing.new("Text")
+    tag.Text = player.Name
+    tag.Size = 13
+    tag.Color = Color3.fromRGB(0, 255, 0) -- Hijau neon
+    tag.Center = true
+    tag.Outline = true
+    tag.OutlineColor = Color3.new(0, 0, 0)
+    tag.Visible = false
 
-		local tag = Instance.new("BillboardGui")
-		tag.Name = "STREE_TAG"
-		tag.Adornee = head
-		tag.Size = UDim2.new(0, 100, 0, 20)
-		tag.StudsOffset = Vector3.new(0, 2.5, 0)
-		tag.AlwaysOnTop = true
-		tag.Parent = head
-
-		local text = Instance.new("TextLabel")
-		text.Size = UDim2.new(1, 0, 1, 0)
-		text.BackgroundTransparency = 1
-		text.Text = player.DisplayName
-		text.TextColor3 = Color3.fromRGB(0, 255, 0)
-		text.TextStrokeTransparency = 0.3
-		text.Font = Enum.Font.SourceSans
-		text.TextScaled = false
-		text.TextSize = 14
-		text.Parent = tag
-
-		appliedTags[player] = tag
-	end
-
-	player.CharacterAdded:Connect(function(char)
-		char:WaitForChild("Head", 5)
-		applyTag(char)
-	end)
-
-	if player.Character and player.Character:FindFirstChild("Head") then
-		applyTag(player.Character)
-	end
+    nameTags[player] = tag
 end
 
--- Tambahkan toggle ke VisualTab OrionLib
-VisualTab:AddToggle({
-	Name = "ESP NameTag",
-	Default = false,
-	Callback = function(state)
-		ESPNameTag_Enabled = state
+-- Hapus NameTag
+local function RemoveNameTag(player)
+    if nameTags[player] then
+        nameTags[player]:Remove()
+        nameTags[player] = nil
+    end
+end
 
-		if state then
-			-- Pasang ke semua player yang ada
-			for _, p in ipairs(Players:GetPlayers()) do
-				attachNameTag(p)
-			end
+-- Loop utama ESP Name
+local function StartESPName()
+    RunService.RenderStepped:Connect(function()
+        if not _G.STREE_ESP_NAME then
+            for _, tag in pairs(nameTags) do
+                tag.Visible = false
+            end
+            return
+        end
 
-			-- Pasang juga jika ada player baru
-			Players.PlayerAdded:Connect(function(p)
-				attachNameTag(p)
-			end)
-		else
-			-- Hapus semua tag
-			for _, p in ipairs(Players:GetPlayers()) do
-				if p.Character and p.Character:FindFirstChild("Head") then
-					local head = p.Character:FindFirstChild("Head")
-					if head:FindFirstChild("STREE_TAG") then
-						head:FindFirstChild("STREE_TAG"):Destroy()
-					end
-				end
-			end
-		end
-	end
-})
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+                if not nameTags[player] then
+                    CreateNameTag(player)
+                end
+
+                local head = player.Character.Head
+                local pos, onScreen = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 1.5, 0))
+
+                local tag = nameTags[player]
+                if onScreen then
+                    tag.Position = Vector2.new(pos.X, pos.Y)
+                    tag.Text = player.Name
+                    tag.Visible = true
+                else
+                    tag.Visible = false
+                end
+            else
+                RemoveNameTag(player)
+            end
+        end
+    end)
+
+    -- Bersihkan saat player keluar
+    Players.PlayerRemoving:Connect(function(player)
+        RemoveNameTag(player)
+    end)
+end
+
+-- Mulai jika toggle aktif
+if _G.STREE_ESP_NAME then
+    StartESPName()
+end

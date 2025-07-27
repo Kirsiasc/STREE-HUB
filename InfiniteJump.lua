@@ -1,49 +1,49 @@
--- STREE HUB Infinite Jump Bypass [Steal A Brainrot]
-local UIS = game:GetService("UserInputService")
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+-- InfiniteJump.lua (Stealth Bypass for Steal A Brainrot)
 
 _G.STREE_INFINITE_JUMP = _G.STREE_INFINITE_JUMP or false
 
--- Anti-cheat bypass function
-local function PatchAntiJump()
-    -- Block any remote related to jump/fly exploit
-    for _, name in ipairs({"JumpDetected", "ViolationReport", "ServerLog", "ReportExploit"}) do
-        local remote = ReplicatedStorage:FindFirstChild(name)
-        if remote and remote:IsA("RemoteEvent") then
-            remote:Destroy()
-        end
-    end
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
 
-    -- Hook any function with suspicious jump check
-    for _, func in pairs(getgc(true)) do
-        if typeof(func) == "function" and islclosure(func) then
-            local info = debug.getinfo(func)
-            if info and info.name and (info.name:lower():find("jump") or info.name:lower():find("air")) then
-                hookfunction(func, function() return end)
-            end
-        end
-    end
-end
-
--- Infinite Jump
+-- Bypass: gunakan spawn() dan tidak langsung expose koneksi ke _G
 local function EnableInfiniteJump()
-    UIS.JumpRequest:Connect(function()
-        if _G.STREE_INFINITE_JUMP then
-            local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-            local humanoid = char:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    -- Disconnect koneksi lama
+    if _G._INFINITE_JUMP_CONNECTION then
+        pcall(function() _G._INFINITE_JUMP_CONNECTION:Disconnect() end)
+        _G._INFINITE_JUMP_CONNECTION = nil
+    end
+
+    if _G.STREE_INFINITE_JUMP then
+        _G._INFINITE_JUMP_CONNECTION = UIS.InputBegan:Connect(function(input, processed)
+            if processed then return end
+            if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Space then
+                local char = LocalPlayer.Character
+                if char and char:FindFirstChildOfClass("Humanoid") then
+                    -- Bypass via state cycling (tidak langsung pakai Jumping)
+                    local humanoid = char:FindFirstChildOfClass("Humanoid")
+                    if humanoid:GetState() ~= Enum.HumanoidStateType.Freefall then
+                        humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+                        task.wait(0.05)
+                        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                    end
+                end
             end
-        end
-    end)
+        end)
+    end
 end
 
--- Run when toggle is ON
-if _G.STREE_INFINITE_JUMP then
-    PatchAntiJump()
-    EnableInfiniteJump()
-						end
+EnableInfiniteJump()
+
+-- Auto cek toggle tiap detik
+task.spawn(function()
+    while true do
+        task.wait(1)
+        if _G.STREE_INFINITE_JUMP and not _G._INFINITE_JUMP_CONNECTION then
+            EnableInfiniteJump()
+        elseif not _G.STREE_INFINITE_JUMP and _G._INFINITE_JUMP_CONNECTION then
+            _G._INFINITE_JUMP_CONNECTION:Disconnect()
+            _G._INFINITE_JUMP_CONNECTION = nil
+        end
+    end
+end)

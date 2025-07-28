@@ -1,112 +1,91 @@
--- STREE HUB - Cooldown Base Visual (Green Neon)
--- Bypass AntiCheat Ready
+-- STREE HUB | Cooldown Base Countdown Akurat - Steal A Brainrot
 
-if not _G.STREE_COOLDOWN_BASE then return end
-
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
 local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
 
-local CooldownTagName = "BaseCooldown" -- bisa kamu sesuaikan
-local Active = true
+_G.STREE_COOLDOWN_BASE = _G.STREE_COOLDOWN_BASE or true
 
--- Buat tag text
-local function CreateBillboard(text)
+local COOLDOWN_NAMES = { "Base", "Totem", "Cooldown", "Altar", "Operate", "Station" }
+
+local function CreateBillboard()
 	local bb = Instance.new("BillboardGui")
-	bb.Name = "CooldownBB"
-	bb.Size = UDim2.new(0, 100, 0, 50)
-	bb.StudsOffset = Vector3.new(0, 3, 0)
+	bb.Name = "STREE_COOLDOWN"
+	bb.Size = UDim2.new(0, 100, 0, 40)
+	bb.StudsOffset = Vector3.new(0, 3.5, 0)
 	bb.AlwaysOnTop = true
 
 	local txt = Instance.new("TextLabel", bb)
 	txt.Size = UDim2.new(1, 0, 1, 0)
 	txt.BackgroundTransparency = 1
-	txt.Text = tostring(text)
-	txt.TextColor3 = Color3.fromRGB(0, 255, 0)
+	txt.TextColor3 = Color3.fromRGB(255, 255, 255)
 	txt.TextStrokeTransparency = 0
 	txt.TextScaled = true
 	txt.Font = Enum.Font.SourceSansBold
-
+	txt.Name = "CooldownLabel"
+	txt.Text = "..."
 	return bb
 end
 
--- Update Loop
-local function StartCooldownLoop()
-	while _G.STREE_COOLDOWN_BASE and task.wait(0.1) do
-		pcall(function()
-			for _, obj in pairs(Workspace:GetDescendants()) do
-				if obj:IsA("BasePart") and obj:FindFirstChild("CooldownBB") == nil then
-					if obj.Name:lower():find("cooldown") or obj.Name:lower():find("base") then
-						local bb = CreateBillboard("🟢")
-						bb.Parent = obj
-					end
-				end
-			end
-		end)
+local function isCooldownBase(part)
+	if not part:IsA("BasePart") then return false end
+	for _, keyword in ipairs(COOLDOWN_NAMES) do
+		if string.lower(part.Name):find(string.lower(keyword)) then
+			return true
+		end
 	end
+	return false
 end
 
--- Mulai loop di thread aman
-task.spawn(StartCooldownLoop)
+task.spawn(function()
+	while _G.STREE_COOLDOWN_BASE do
+		for _, part in ipairs(Workspace:GetDescendants()) do
+			if isCooldownBase(part) and not part:FindFirstChild("STREE_COOLDOWN") then
+				local bb = CreateBillboard()
+				bb.Adornee = part
+				bb.Parent = part
 
--- Bersihkan saat toggle dimatikan
+				local label = bb:WaitForChild("CooldownLabel")
+				task.spawn(function()
+					while bb and bb.Parent and _G.STREE_COOLDOWN_BASE do
+						local cooldownValue = nil
+
+						-- Cek Value langsung
+						if part:FindFirstChild("Cooldown") and part.Cooldown:IsA("NumberValue") then
+							cooldownValue = part.Cooldown.Value
+
+						-- Cek Attribute
+						elseif part:GetAttribute("Cooldown") then
+							cooldownValue = part:GetAttribute("Cooldown")
+						end
+
+						-- Tampilkan countdown jika ditemukan
+						if cooldownValue then
+							if tonumber(cooldownValue) <= 0 then
+								label.Text = "READY"
+							else
+								label.Text = string.format("%.2f", cooldownValue)
+							end
+						else
+							label.Text = "..."
+						end
+
+						wait(0.1)
+					end
+				end)
+			end
+		end
+		wait(1)
+	end
+end)
+
+-- Bersihkan jika toggle dimatikan
 RunService.RenderStepped:Connect(function()
 	if not _G.STREE_COOLDOWN_BASE then
-		for _, obj in pairs(Workspace:GetDescendants()) do
-			if obj:FindFirstChild("CooldownBB") then
-				obj.CooldownBB:Destroy()
+		for _, part in ipairs(Workspace:GetDescendants()) do
+			local gui = part:FindFirstChild("STREE_COOLDOWN")
+			if gui then
+				gui:Destroy()
 			end
 		end
 	end
 end)
-
-    espTable[part] = dot
-end
-
--- Hapus ESP dari part
-local function removeESP(part)
-    if espTable[part] then
-        espTable[part]:Remove()
-        espTable[part] = nil
-    end
-end
-
--- Scan dan tandai semua base cooldown
-local function scanCooldownParts()
-    for _, obj in ipairs(Workspace:GetDescendants()) do
-        if isCooldownBase(obj) then
-            createESP(obj)
-        end
-    end
-end
-
--- Render ESP loop
-local function renderLoop()
-    RunService.RenderStepped:Connect(function()
-        if not _G.STREE_COOLDOWN_BASE then
-            for _, dot in pairs(espTable) do
-                dot.Visible = false
-            end
-            return
-        end
-
-        for part, dot in pairs(espTable) do
-            if part and part.Parent then
-                local pos, onScreen = Camera:WorldToViewportPoint(part.Position + Vector3.new(0, 2, 0))
-                if onScreen then
-                    dot.Position = Vector2.new(pos.X, pos.Y)
-                    dot.Visible = true
-                else
-                    dot.Visible = false
-                end
-            else
-                removeESP(part)
-            end
-        end
-    end)
-end
-
--- Eksekusi
-scanCooldownParts()
-renderLoop()

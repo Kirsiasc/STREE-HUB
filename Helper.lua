@@ -1,17 +1,56 @@
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
+-- Inisialisasi toggle global
+_G.STREE_HELPER = _G.STREE_HELPER or false
 
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local HRP = Character:WaitForChild("HumanoidRootPart")
+-- Fungsi utama Helper
+local function RunHelper()
+    local Players = game:GetService("Players")
+    local RunService = game:GetService("RunService")
+    local Player = Players.LocalPlayer
+    local Character = Player.Character or Player.CharacterAdded:Wait()
 
--- Tujuan (safe zone)
-local SafePos = Vector3.new(-4518, 175, -1021) -- Ganti sesuai lokasi aman
+    -- Pastikan karakter ada
+    local HRP = Character:WaitForChild("HumanoidRootPart")
 
--- Tween Info
-local TweenTime = 3 -- Detik waktu perpindahan
-local TweenInfo = TweenInfo.new(TweenTime, Enum.EasingStyle.Linear)
+    -- Putuskan koneksi lama jika ada
+    if _G._HELPER_CONNECTION then
+        _G._HELPER_CONNECTION:Disconnect()
+        _G._HELPER_CONNECTION = nil
+    end
 
--- Buat Tween
-local Tween = TweenService:Create(HRP, TweenInfo, {CFrame = CFrame.new(SafePos)})
-Tween:Play()
+    -- Fungsi jika toggle aktif
+    if _G.STREE_HELPER then
+        _G._HELPER_CONNECTION = RunService.Stepped:Connect(function()
+            pcall(function()
+                -- Cegah Ragdoll
+                if Character:FindFirstChild("Ragdoll") then
+                    Character.Ragdoll:Destroy()
+                end
+
+                -- Cegah Humanoid mati / rusak
+                local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+                if Humanoid then
+                    Humanoid:ChangeState(11) -- Physics agar tidak jatuh
+                    Humanoid:RemoveAccessories() -- opsional, anti deteksi
+
+                    -- Reset ulang posisi jika stuck (opsional)
+                    Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+                    Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+                    Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+                    Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+                end
+
+                -- Anti Fall + Lewat Arena
+                HRP.Velocity = Vector3.zero
+                HRP.CanCollide = false
+            end)
+        end)
+    end
+end
+
+-- Loop pantau toggle
+task.spawn(function()
+    while true do
+        RunHelper()
+        task.wait(0.3)
+    end
+end)

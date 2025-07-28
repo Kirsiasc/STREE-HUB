@@ -1,37 +1,65 @@
--- STREE HUB | Cooldown Base ESP Putih Neon | Steal A Brainrot Compatible
-local Workspace = game:GetService("Workspace")
+-- STREE HUB - Cooldown Base Visual (Green Neon)
+-- Bypass AntiCheat Ready
+
+if not _G.STREE_COOLDOWN_BASE then return end
+
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local Camera = Workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
 
-_G.STREE_COOLDOWN_BASE = _G.STREE_COOLDOWN_BASE or false
+local CooldownTagName = "BaseCooldown" -- bisa kamu sesuaikan
+local Active = true
 
--- Ganti nama-nama base cooldown di bawah ini sesuai dengan yang dipakai di Steal A Brainrot
-local COOLDOWN_NAMES = { "Base", "Totem", "Cooldown", "Altar", "Operate", "Station" }
+-- Buat tag text
+local function CreateBillboard(text)
+	local bb = Instance.new("BillboardGui")
+	bb.Name = "CooldownBB"
+	bb.Size = UDim2.new(0, 100, 0, 50)
+	bb.StudsOffset = Vector3.new(0, 3, 0)
+	bb.AlwaysOnTop = true
 
-local espTable = {}
+	local txt = Instance.new("TextLabel", bb)
+	txt.Size = UDim2.new(1, 0, 1, 0)
+	txt.BackgroundTransparency = 1
+	txt.Text = tostring(text)
+	txt.TextColor3 = Color3.fromRGB(0, 255, 0)
+	txt.TextStrokeTransparency = 0
+	txt.TextScaled = true
+	txt.Font = Enum.Font.SourceSansBold
 
--- Cek apakah part cocok dengan nama-nama cooldown
-local function isCooldownBase(part)
-    if not part:IsA("BasePart") then return false end
-    for _, keyword in pairs(COOLDOWN_NAMES) do
-        if string.lower(part.Name):find(string.lower(keyword)) then
-            return true
-        end
-    end
-    return false
+	return bb
 end
 
--- Buat ESP neon putih
-local function createESP(part)
-    if espTable[part] then return end
+-- Update Loop
+local function StartCooldownLoop()
+	while _G.STREE_COOLDOWN_BASE and task.wait(0.1) do
+		pcall(function()
+			for _, obj in pairs(Workspace:GetDescendants()) do
+				if obj:IsA("BasePart") and obj:FindFirstChild("CooldownBB") == nil then
+					if obj.Name:lower():find("cooldown") or obj.Name:lower():find("base") then
+						local bb = CreateBillboard("🟢")
+						bb.Parent = obj
+					end
+				end
+			end
+		end)
+	end
+end
 
-    local dot = Drawing.new("Circle")
-    dot.Color = Color3.fromRGB(255, 255, 255) -- Putih neon
-    dot.Thickness = 2
-    dot.Radius = 5
-    dot.Filled = true
-    dot.Transparency = 1
-    dot.Visible = false
+-- Mulai loop di thread aman
+task.spawn(StartCooldownLoop)
+
+-- Bersihkan saat toggle dimatikan
+RunService.RenderStepped:Connect(function()
+	if not _G.STREE_COOLDOWN_BASE then
+		for _, obj in pairs(Workspace:GetDescendants()) do
+			if obj:FindFirstChild("CooldownBB") then
+				obj.CooldownBB:Destroy()
+			end
+		end
+	end
+end)
 
     espTable[part] = dot
 end

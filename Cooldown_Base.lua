@@ -1,4 +1,4 @@
--- STREE HUB | Cooldown Base Countdown Akurat - Steal A Brainrot
+-- STREE HUB | Angka Countdown Real-Time - Putih Neon - Steal A Brainrot
 
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
@@ -17,12 +17,12 @@ local function CreateBillboard()
 	local txt = Instance.new("TextLabel", bb)
 	txt.Size = UDim2.new(1, 0, 1, 0)
 	txt.BackgroundTransparency = 1
-	txt.TextColor3 = Color3.fromRGB(255, 255, 255)
+	txt.TextColor3 = Color3.fromRGB(255, 255, 255) -- Putih Neon
 	txt.TextStrokeTransparency = 0
 	txt.TextScaled = true
 	txt.Font = Enum.Font.SourceSansBold
 	txt.Name = "CooldownLabel"
-	txt.Text = "..."
+	txt.Text = "0.00"
 	return bb
 end
 
@@ -45,28 +45,21 @@ task.spawn(function()
 				bb.Parent = part
 
 				local label = bb:WaitForChild("CooldownLabel")
+
 				task.spawn(function()
 					while bb and bb.Parent and _G.STREE_COOLDOWN_BASE do
 						local cooldownValue = nil
 
-						-- Cek Value langsung
+						-- Ambil value asli dari game
 						if part:FindFirstChild("Cooldown") and part.Cooldown:IsA("NumberValue") then
 							cooldownValue = part.Cooldown.Value
-
-						-- Cek Attribute
 						elseif part:GetAttribute("Cooldown") then
 							cooldownValue = part:GetAttribute("Cooldown")
 						end
 
-						-- Tampilkan countdown jika ditemukan
+						-- Update hanya angka, tidak ada tulisan lain
 						if cooldownValue then
-							if tonumber(cooldownValue) <= 0 then
-								label.Text = "READY"
-							else
-								label.Text = string.format("%.2f", cooldownValue)
-							end
-						else
-							label.Text = "..."
+							label.Text = string.format("%.2f", tonumber(cooldownValue))
 						end
 
 						wait(0.1)
@@ -78,8 +71,17 @@ task.spawn(function()
 	end
 end)
 
--- Bersihkan jika toggle dimatikan
+-- Auto hapus jika toggle dimatikan
 RunService.RenderStepped:Connect(function()
+	if not _G.STREE_COOLDOWN_BASE then
+		for _, part in ipairs(Workspace:GetDescendants()) do
+			local gui = part:FindFirstChild("STREE_COOLDOWN")
+			if gui then
+				gui:Destroy()
+			end
+		end
+	end
+end)
 	if not _G.STREE_COOLDOWN_BASE then
 		for _, part in ipairs(Workspace:GetDescendants()) do
 			local gui = part:FindFirstChild("STREE_COOLDOWN")

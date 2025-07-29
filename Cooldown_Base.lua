@@ -1,68 +1,27 @@
-local Cooldown = {}
-Cooldown.__index = Cooldown
+local cooldown = false
+local cooldownTime = 3 -- waktu cooldown dalam detik
 
-function Cooldown.new(duration)
-    return setmetatable({
-        active = false,
-        duration = duration,
-        remaining = 0,
-        lastUpdate = love.timer.getTime()
-    }, Cooldown)
-end
-
-function Cooldown:start()
-    self.active = true
-    self.remaining = self.duration
-    self.lastUpdate = love.timer.getTime()
-end
-
-function Cooldown:update()
-    if not self.active then return end
-
-    local currentTime = love.timer.getTime()
-    local delta = currentTime - self.lastUpdate
-    self.lastUpdate = currentTime
-
-    self.remaining = self.remaining - delta
-
-    if self.remaining <= 0 then
-        self.remaining = 0
-        self.active = false
+function doAction()
+    if cooldown then
+        warn("Masih cooldown, tunggu dulu bro!")
+        return
     end
+
+    -- Aksi utama di sini
+    print("Aksi dilakukan!")
+
+    -- Mulai cooldown
+    cooldown = true
+    task.delay(cooldownTime, function()
+        cooldown = false
+        print("Cooldown selesai, bisa dipakai lagi!")
+    end)
 end
 
-function Cooldown:isReady()
-    return not self.active
-end
-
-function Cooldown:getRemaining()
-    return math.max(0, self.remaining)
-end
-
-function Cooldown:getProgress()
-    if self.duration == 0 then return 1 end
-    return 1 - (self.remaining / self.duration)
-end
-
--- Example usage
-local abilityCooldown = Cooldown.new(5)
-
-function love.update(dt)
-    abilityCooldown:update()
-
-    if love.keyboard.isDown('space') and abilityCooldown:isReady() then
-        print("Ability used!")
-        abilityCooldown:start()
+-- Contoh: Hubungkan ke tombol keyboard
+game:GetService("UserInputService").InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    if input.KeyCode == Enum.KeyCode.E then
+        doAction()
     end
-end
-
-function love.draw()
-    if not abilityCooldown:isReady() then
-        love.graphics.setColor(0, 1, 0) -- hijau neon
-        love.graphics.setFont(love.graphics.newFont(24))
-        love.graphics.print(string.format("%.1f", abilityCooldown:getRemaining()), 10, 30)
-        love.graphics.setColor(1, 1, 1) -- reset
-    else
-        love.graphics.print("Ready! Press SPACE", 10, 30)
-    end
-end
+end)

@@ -156,6 +156,21 @@ PopularTab:CreateButton({
     end,
 })
 
+-- UIDK ESP AFZ
+PopularTab:CreateButton({
+    Name = "ESP AFZ",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Loading",
+            Content = "Loading ESP AFZ...",
+            Duration = 3,
+            Image = 4483362458
+        })
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/golden-man965/Mysterious-hub/refs/heads/main/Esp"))()
+    end,
+})
+
+
 -- Toggle: Super Ring Parts V6 (Tab: Popular)
 local Toggle2 = false
 PopularTab:CreateToggle({

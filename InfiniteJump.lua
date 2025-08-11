@@ -1,6 +1,7 @@
+-- Aktifkan/Berhentikan fitur infinite jump
 _G.STREE_INFINITE_JUMP = _G.STREE_INFINITE_JUMP or false
 
--- Hapus loop sebelumnya
+-- Matikan loop sebelumnya jika aktif
 if _G._INFINITE_JUMP_LOOP then
     _G._INFINITE_JUMP_LOOP:Disconnect()
     _G._INFINITE_JUMP_LOOP = nil
@@ -13,14 +14,15 @@ local LocalPlayer = Players.LocalPlayer
 -- Loop render per frame
 _G._INFINITE_JUMP_LOOP = RunService.RenderStepped:Connect(function()
     if _G.STREE_INFINITE_JUMP then
-        local Character = LocalPlayer.Character
-        if Character then
-            local Humanoid = Character:FindFirstChildOfClass("Humanoid")
-            local HRP = Character:FindFirstChild("HumanoidRootPart")
-            if Humanoid and HRP and Humanoid:GetState() ~= Enum.HumanoidStateType.Dead then
-                -- Beri dorongan ke atas konstan
-                HRP.Velocity = Vector3.new(HRP.Velocity.X, 60, HRP.Velocity.Z)
-                Humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+        local char = LocalPlayer.Character
+        if char then
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if humanoid and hrp and humanoid:GetState() ~= Enum.HumanoidStateType.Dead then
+                -- Pastikan Y-Velocity minimal
+                local vel = hrp.Velocity
+                hrp.Velocity = Vector3.new(vel.X, math.max(60, vel.Y), vel.Z)
+                humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
             end
         end
     end
